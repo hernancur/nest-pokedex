@@ -14,7 +14,6 @@ Powered by Pokeapi.
 * Nest 
 * Docker
 * Mongo DB
-* Type ORM
 
 
 
@@ -35,10 +34,10 @@ yarn add -g @nestjs/cli
 docker-compose up -d
 ```
 
-#### Running the app
+#### Running the app to development
 
 ```bash
-$ yarn run start
+$ yarn start:dev
 ```
 
 ## Stay in touch
