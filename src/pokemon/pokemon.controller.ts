@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  ParseUUIDPipe,
   HttpCode,
 } from '@nestjs/common';
 import { PokemonService } from './pokemon.service';
@@ -37,14 +36,14 @@ export class PokemonController {
 
   @Patch(':id')
   update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseMongoIdPipe) id: mongoose.Types.ObjectId,
     @Body() updatePokemonDto: UpdatePokemonDto,
   ) {
     return this.pokemonService.update(id, updatePokemonDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
+  remove(@Param('id', ParseMongoIdPipe) id: mongoose.Types.ObjectId) {
     return this.pokemonService.remove(id);
   }
 }

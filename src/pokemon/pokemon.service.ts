@@ -57,14 +57,31 @@ export class PokemonService {
     return `This action returns a #${id} pokemon`;
   }
 
-  update(id: string, updatePokemonDto: UpdatePokemonDto) {
-    return {
-      updatePokemonDto,
-      id,
-    };
+  async update(
+    id: mongoose.Types.ObjectId,
+    updatePokemonDto: UpdatePokemonDto,
+  ) {
+    try {
+      const updated = await this.pokemonModel.updateOne(
+        { _id: id },
+        { ...updatePokemonDto },
+      );
+      if (updated.modifiedCount < 1)
+        throw new BadRequestException('Nothing to update. 0 rows affected');
+      return 'Updated';
+    } catch (error) {
+      return error.message;
+    }
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} pokemon`;
+  async remove(id: mongoose.Types.ObjectId) {
+    try {
+      const deleted = await this.pokemonModel.deleteOne({ _id: id });
+      if (deleted.deletedCount < 1)
+        throw new BadRequestException('Nothing to delete. 0 rows affected.');
+      return 'Deleted';
+    } catch (error) {
+      return error.message;
+    }
   }
 }
