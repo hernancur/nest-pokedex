@@ -9,19 +9,36 @@ A Pokedex with a statically served web at root is loaned.
 
 Powered by Pokeapi.
 
-#### Installation
+## Stack
+
+* Nest 
+* Docker
+* Mongo DB
+* Type ORM
+
+
+
+## Run developer mode:
+
+1. Clone the repository
+2. Run install
 
 ```bash
 $ yarn install
+```
+3. Nest CLI must be installed
+```bash
+yarn add -g @nestjs/cli
+```
+4. Database set up
+```bash
+docker-compose up -d
 ```
 
 #### Running the app
 
 ```bash
 $ yarn run start
-
-# production mode
-$ yarn run start:prod
 ```
 
 ## Stay in touch

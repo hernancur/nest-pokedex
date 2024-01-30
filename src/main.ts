@@ -1,8 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 
-async function bootstrap() {
+async function startServer() {
   const app = await NestFactory.create(AppModule);
+
+  app.setGlobalPrefix('api/v2');
+  app.useGlobalPipes(
+    new ValidationPipe({
+      // Dont let pass innecesary props
+      whitelist: true,
+      // Returning error when non-expected props are passed
+      forbidNonWhitelisted: true,
+    }),
+  );
+
   await app.listen(3000);
 }
-bootstrap();
+startServer();

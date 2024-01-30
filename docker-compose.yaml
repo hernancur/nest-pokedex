@@ -1,0 +1,15 @@
+
+version: '3'
+
+services:
+  db:
+    image: mongo:5
+    restart: always
+    # conectamos el PORT del pc con el PORT del contenedor
+    ports:
+      - 27017:27017
+    environment:
+      MONGODB_DATABASE: nest-pokemon
+    # conecto File System con los datos del contenedor. Persiste datos 
+    volumes:
+      - ./mongo:/data/db
