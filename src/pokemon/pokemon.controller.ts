@@ -30,7 +30,7 @@ export class PokemonController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseMongoIdPipe) id: mongoose.Types.ObjectId) {
+  findOne(@Param('id') id: string) {
     return this.pokemonService.findOne(id);
   }
 

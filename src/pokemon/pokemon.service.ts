@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
-import mongoose, { Model } from 'mongoose';
+import mongoose, { Model, isValidObjectId } from 'mongoose';
 import { Pokemon } from './entities/pokemon.entity';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -45,16 +45,32 @@ export class PokemonService {
     }
   }
 
-  async findOne(id: mongoose.Types.ObjectId) {
+  async findOne(term: string) {
     try {
-      const pokemon = await this.pokemonModel.findById(id);
+      let pokemon: Pokemon;
+      // Es un numero
+      if (!isNaN(+term)) {
+        pokemon = await this.pokemonModel.findOne({ no: term });
+      }
+
+      // Es mongo id
+      if (!pokemon && isValidObjectId(term)) {
+        pokemon = await this.pokemonModel.findById(term);
+      }
+
+      // Es un nombre
+      if (!pokemon) {
+        pokemon = await this.pokemonModel.findOne({
+          name: term.toLowerCase().trim(),
+        });
+      }
+
       if (!pokemon)
-        throw new NotFoundException(`Pokemon with id ${id} not found.`);
+        throw new NotFoundException(`Pokemon with term ${term} not found.`);
       return pokemon;
     } catch (error) {
       return error.message;
     }
-    return `This action returns a #${id} pokemon`;
   }
 
   async update(
