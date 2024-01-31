@@ -9,6 +9,7 @@ import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import mongoose, { Model, isValidObjectId } from 'mongoose';
 import { Pokemon } from './entities/pokemon.entity';
 import { InjectModel } from '@nestjs/mongoose';
+import axios, { AxiosInstance } from 'axios';
 
 @Injectable()
 export class PokemonService {
@@ -16,6 +17,8 @@ export class PokemonService {
     @InjectModel(Pokemon.name)
     private readonly pokemonModel: Model<Pokemon>,
   ) {}
+
+  private readonly axios: AxiosInstance = axios;
 
   async create(createPokemonDto: CreatePokemonDto) {
     createPokemonDto.name = createPokemonDto.name.toLocaleLowerCase();
@@ -61,13 +64,18 @@ export class PokemonService {
 
       // Es un nombre
       if (!pokemon) {
+        term = term.toLowerCase().trim();
         pokemon = await this.pokemonModel.findOne({
-          name: term.toLowerCase().trim(),
+          name: term,
         });
       }
 
-      if (!pokemon)
-        throw new NotFoundException(`Pokemon with term ${term} not found.`);
+      if (!pokemon) {
+        const searchPoke = await this.seedOne(term);
+        if (!searchPoke)
+          throw new NotFoundException(`Pokemon with term ${term} not found.`);
+        return searchPoke;
+      }
       return pokemon;
     } catch (error) {
       return error.message;
@@ -101,12 +109,28 @@ export class PokemonService {
     }
   }
 
-  private handleExceptions(error: any) {
+  handleExceptions(error: any) {
     if (error.code === 11000) {
       throw new BadRequestException(
         `Pokemon already up to date in db - ${JSON.stringify(error.keyValue)}`,
       );
     }
-    throw new InternalServerErrorException(`Can't change Pokemon - Check logs`);
+    throw new InternalServerErrorException(
+      `Can't change Pokemon - Check: ${error.message}`,
+    );
+  }
+
+  async seedOne(pokemon) {
+    try {
+      // No existe en DB, lo buscamos en API y lo cargamos
+      const { data } = await this.axios(
+        `https://pokeapi.co/api/v2/pokemon/${pokemon}`,
+      );
+      const pokeToCreate = { name: data.name, no: data.id };
+      const created = await this.create(pokeToCreate);
+      return created;
+    } catch (error) {
+      this.handleExceptions(error);
+    }
   }
 }
