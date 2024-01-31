@@ -12,7 +12,7 @@ export class ParseMongoIdPipe implements PipeTransform {
     try {
       return new mongoose.Types.ObjectId(value);
     } catch (e) {
-      throw new BadRequestException('Invalid ID');
+      throw new BadRequestException('Invalid mongo ID');
     }
   }
 }

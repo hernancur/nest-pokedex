@@ -90,9 +90,11 @@ export class PokemonService {
 
   async remove(id: mongoose.Types.ObjectId) {
     try {
-      const deleted = await this.pokemonModel.deleteOne({ _id: id });
-      if (deleted.deletedCount < 1)
-        throw new BadRequestException('Nothing to delete. 0 rows affected.');
+      const { deletedCount } = await this.pokemonModel.deleteOne({ _id: id });
+      if (deletedCount < 1)
+        throw new BadRequestException(
+          `0 rows affected. ID [${id}] not found in db `,
+        );
       return 'Deleted';
     } catch (error) {
       return error.message;
