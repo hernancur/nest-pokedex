@@ -24,9 +24,7 @@ export class SeedService {
       },
     }));
     try {
-      const result = await this.pokemonModel.bulkWrite(operations);
-      // await this.pokemonModel.insertMany(pokemons, { ordered: false });
-      console.log(result, '<< RESULT HERE');
+      await this.pokemonModel.bulkWrite(operations);
       return `Inserted ${pokemons.length} pokemons`;
     } catch (error) {
       console.log(error.message);
