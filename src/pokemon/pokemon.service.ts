@@ -19,18 +19,19 @@ export class PokemonService {
 
   async create(createPokemonDto: CreatePokemonDto) {
     createPokemonDto.name = createPokemonDto.name.toLocaleLowerCase();
+
     try {
+      const existingPokemon = await this.pokemonModel.findOne({
+        $or: [{ name: createPokemonDto.name }, { no: createPokemonDto.no }],
+      });
+      if (existingPokemon)
+        throw new BadRequestException(
+          'Pokemon already exists or has duplicated key value',
+        );
       const newPokemon = await this.pokemonModel.create(createPokemonDto);
       return newPokemon;
     } catch (error) {
-      if (error.code === 11000) {
-        throw new BadRequestException(
-          `Pokemon already exists in db - ${JSON.stringify(error.keyValue)}`,
-        );
-      }
-      throw new InternalServerErrorException(
-        `Can't create Pokemon ${createPokemonDto.name} - Check logs`,
-      );
+      this.handleExceptions(error);
     }
   }
 
@@ -73,20 +74,17 @@ export class PokemonService {
     }
   }
 
-  async update(
-    id: mongoose.Types.ObjectId,
-    updatePokemonDto: UpdatePokemonDto,
-  ) {
+  async update(term: string, updatePokemonDto: UpdatePokemonDto) {
+    if (updatePokemonDto.name)
+      updatePokemonDto.name = updatePokemonDto.name.toLowerCase();
     try {
-      const updated = await this.pokemonModel.updateOne(
-        { _id: id },
-        { ...updatePokemonDto },
-      );
-      if (updated.modifiedCount < 1)
-        throw new BadRequestException('Nothing to update. 0 rows affected');
-      return 'Updated';
+      const pokemon = await this.findOne(term);
+      await pokemon.updateOne(updatePokemonDto, {
+        new: true,
+      });
+      return { ...pokemon.toJSON(), ...updatePokemonDto };
     } catch (error) {
-      return error.message;
+      this.handleExceptions(error);
     }
   }
 
@@ -99,5 +97,14 @@ export class PokemonService {
     } catch (error) {
       return error.message;
     }
+  }
+
+  private handleExceptions(error: any) {
+    if (error.code === 11000) {
+      throw new BadRequestException(
+        `Pokemon already up to date in db - ${JSON.stringify(error.keyValue)}`,
+      );
+    }
+    throw new InternalServerErrorException(`Can't change Pokemon - Check logs`);
   }
 }

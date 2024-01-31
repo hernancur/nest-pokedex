@@ -11,7 +11,7 @@ import {
 import { PokemonService } from './pokemon.service';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
-import { ParseMongoIdPipe } from './pipes/parse-mongo-id.pipe';
+import { ParseMongoIdPipe } from '../pipes/parse-mongo-id.pipe';
 import mongoose from 'mongoose';
 
 @Controller('pokemon')
@@ -35,10 +35,7 @@ export class PokemonController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id', ParseMongoIdPipe) id: mongoose.Types.ObjectId,
-    @Body() updatePokemonDto: UpdatePokemonDto,
-  ) {
+  update(@Param('id') id: string, @Body() updatePokemonDto: UpdatePokemonDto) {
     return this.pokemonService.update(id, updatePokemonDto);
   }
 
