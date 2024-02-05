@@ -17,27 +17,50 @@ Powered by Pokeapi.
 
 
 
-## Run developer mode:
+## How to run the API:
 
 1. Clone the repository
 2. Run install
+  2.1 Install Nest CLI
+3. Up database
+4. Run server
+5. Populate the db
+
+### 1 
+
+```bash
+git clone https://github.com/hernancur/nest-pokedex.git
+```
+
+### 2
 
 ```bash
 $ yarn install
 ```
-3. Nest CLI must be installed
+
+### 2.1
+
 ```bash
 yarn add -g @nestjs/cli
 ```
-4. Database set up
+
+### 3 
+
 ```bash
 docker-compose up -d
 ```
 
-#### Running the app to development
+### 4 
 
 ```bash
 $ yarn start:dev
+```
+
+### 5 
+
+Send a GET query to 
+```
+http://localhost:3000/api/v2/seed
 ```
 
 ## Stay in touch

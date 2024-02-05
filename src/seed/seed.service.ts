@@ -1,8 +1,4 @@
-import {
-  HttpCode,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
 import { PokeResponse } from './interfaces/poke-interface-interface';
 import { InjectModel } from '@nestjs/mongoose';
