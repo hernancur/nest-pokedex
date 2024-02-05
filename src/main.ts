@@ -12,6 +12,11 @@ async function startServer() {
       whitelist: true,
       // Returning error when non-expected props are passed
       forbidNonWhitelisted: true,
+      // make transforms DTO's
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
     }),
   );
 

@@ -39,9 +39,14 @@ export class PokemonService {
     }
   }
 
-  async findAll() {
+  async findAll(querys) {
+    let query = this.pokemonModel.find();
+    if (querys.limit && !isNaN(+querys.limit))
+      query = query.limit(+querys.limit);
+    if (querys.offset && !isNaN(+querys.offset))
+      query = query.skip(+querys.offset);
     try {
-      const pokemons = await this.pokemonModel.find();
+      const pokemons = await query;
       if (!pokemons.length)
         throw new NotFoundException(`They're no Pokemons available`);
       return pokemons;

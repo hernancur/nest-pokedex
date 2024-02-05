@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import axios, { AxiosInstance } from 'axios';
 import { PokeResponse } from './interfaces/poke-interface-interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Pokemon } from 'src/pokemon/entities/pokemon.entity';
 import { CommonService } from 'src/common/common.service';
+import { AxiosAdapter } from 'src/common/adapters/axios.adapter';
 
 @Injectable()
 export class SeedService {
@@ -12,8 +12,8 @@ export class SeedService {
     @InjectModel(Pokemon.name)
     private readonly pokemonModel: Model<Pokemon>,
     private readonly commonService: CommonService,
+    private readonly http: AxiosAdapter,
   ) {}
-  private readonly axios: AxiosInstance = axios;
 
   private async bulkCreate(pokemons) {
     const operations = pokemons.map((pokemon) => ({
@@ -33,7 +33,7 @@ export class SeedService {
 
   async executeSeed() {
     try {
-      const { data } = await this.axios.get<PokeResponse>(
+      const data = await this.http.get<PokeResponse>(
         'https://pokeapi.co/api/v2/pokemon?limit=800',
       );
 
