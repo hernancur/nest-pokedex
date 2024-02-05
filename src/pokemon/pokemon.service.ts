@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
@@ -10,12 +9,14 @@ import mongoose, { Model, isValidObjectId } from 'mongoose';
 import { Pokemon } from './entities/pokemon.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import axios, { AxiosInstance } from 'axios';
+import { CommonService } from 'src/common/common.service';
 
 @Injectable()
 export class PokemonService {
   constructor(
     @InjectModel(Pokemon.name)
     private readonly pokemonModel: Model<Pokemon>,
+    private readonly commonService: CommonService,
   ) {}
 
   private readonly axios: AxiosInstance = axios;
@@ -34,7 +35,7 @@ export class PokemonService {
       const newPokemon = await this.pokemonModel.create(createPokemonDto);
       return newPokemon;
     } catch (error) {
-      this.handleExceptions(error);
+      this.commonService.handleExceptions(error);
     }
   }
 
@@ -92,7 +93,7 @@ export class PokemonService {
       });
       return { ...pokemon.toJSON(), ...updatePokemonDto };
     } catch (error) {
-      this.handleExceptions(error);
+      this.commonService.handleExceptions(error);
     }
   }
 
@@ -109,17 +110,6 @@ export class PokemonService {
     }
   }
 
-  handleExceptions(error: any) {
-    if (error.code === 11000) {
-      throw new BadRequestException(
-        `Pokemon already up to date in db - ${JSON.stringify(error.keyValue)}`,
-      );
-    }
-    throw new InternalServerErrorException(
-      `Can't change Pokemon - Check: ${error.message}`,
-    );
-  }
-
   async seedOne(pokemon) {
     try {
       // No existe en DB, lo buscamos en API y lo cargamos
@@ -130,7 +120,7 @@ export class PokemonService {
       const created = await this.create(pokeToCreate);
       return created;
     } catch (error) {
-      this.handleExceptions(error);
+      this.commonService.handleExceptions(error);
     }
   }
 }
