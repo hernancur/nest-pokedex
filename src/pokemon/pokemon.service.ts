@@ -3,6 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import mongoose, { Model, isValidObjectId } from 'mongoose';
@@ -10,14 +12,20 @@ import { Pokemon } from './entities/pokemon.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import axios, { AxiosInstance } from 'axios';
 import { CommonService } from 'src/common/common.service';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class PokemonService {
+  private defaultLimit: number;
+
   constructor(
     @InjectModel(Pokemon.name)
     private readonly pokemonModel: Model<Pokemon>,
     private readonly commonService: CommonService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.defaultLimit = configService.get<number>('defaultLimit');
+  }
 
   private readonly axios: AxiosInstance = axios;
 
@@ -39,14 +47,15 @@ export class PokemonService {
     }
   }
 
-  async findAll(querys) {
-    let query = this.pokemonModel.find();
-    if (querys.limit && !isNaN(+querys.limit))
-      query = query.limit(+querys.limit);
-    if (querys.offset && !isNaN(+querys.offset))
-      query = query.skip(+querys.offset);
+  async findAll(paginationDto: PaginationDto) {
+    const { limit = this.defaultLimit, offset = 0 } = paginationDto;
+
     try {
-      const pokemons = await query;
+      const pokemons = await this.pokemonModel
+        .find()
+        .limit(limit)
+        .skip(offset)
+        .select('-__v'); // excluding the "__v" prop.
       if (!pokemons.length)
         throw new NotFoundException(`They're no Pokemons available`);
       return pokemons;

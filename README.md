@@ -58,7 +58,7 @@ $ yarn start:dev
 
 ### 5 
 
-Send a GET query to 
+Send one HTTP request to
 ```
 http://localhost:3000/api/v2/seed
 ```

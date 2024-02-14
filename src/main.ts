@@ -20,6 +20,7 @@ async function startServer() {
     }),
   );
 
-  await app.listen(3000);
+  await app.listen(process.env.PORT);
+  console.log(`App running on PORT:${process.env.PORT}`);
 }
 startServer();
