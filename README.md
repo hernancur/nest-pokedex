@@ -24,7 +24,8 @@ Powered by Pokeapi.
   2.1 Install Nest CLI
 3. Up database
 4. Run server
-5. Populate the db
+5. Clone the __.env.template__ file
+6. Populate the db
 
 ### 1 
 
