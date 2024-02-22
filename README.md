@@ -24,8 +24,10 @@ Powered by Pokeapi.
   2.1 Install Nest CLI
 3. Up database
 4. Run server
-5. Clone the __.env.template__ file
-6. Populate the db
+5. Clone the __.env.template__ file and change name to __.env__
+6. Complete the ENV variables defined
+7. Run the app
+8. Populate the db
 
 ### 1 
 
@@ -51,18 +53,24 @@ yarn add -g @nestjs/cli
 docker-compose up -d
 ```
 
-### 4 
+### 7
 
 ```bash
 $ yarn start:dev
 ```
 
-### 5 
+### 8
 
 Send one HTTP request to
 ```
 http://localhost:3000/api/v2/seed
 ```
+
+
+## Techs
+
+- Nest
+- Mongo db
 
 ## Stay in touch
 
